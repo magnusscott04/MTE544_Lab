@@ -21,15 +21,11 @@ class Logger:
     def log_values(self, values_list):
 
         with open(self.filename, 'a') as file:
-            vals_str=""
-
-            for val in values_list:
-                val_str += str(val)
-                vals_str += ", "
+            #Convetr each value into a string, join with comma.
+            line = ", ".join(str(val) for val in values_list)
             
-            vals_str+="\n"
-            
-            file.write(vals_str)
+            # write to file, add new line.
+            file.write(line + "\n")
             
 
     def save_log(self):
@@ -91,10 +87,8 @@ def euler_from_quaternion(quat):
     else:
         x, y, z, w = quat[0], quat[1], quat[2], quat[3]
 
-    # Standard formula for yaw (rotation around Z axis)
-    t3 = 2.0 * (w * z + x * y)
-    t4 = 1.0 - 2.0 * (y * y + z * z)
-    yaw = atan2(t3, t4)
+    # Yaw calculation (Rot about z)
+    yaw = atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z))
 
     return yaw
 

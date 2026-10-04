@@ -17,6 +17,7 @@ from rclpy.time import Time
 # import ...
 
 qos_size = 10
+spiral_t = 0
 
 CIRCLE=0; SPIRAL=1; ACC_LINE=2
 motion_types=['circle', 'spiral', 'line']
@@ -109,7 +110,7 @@ class motion_executioner(Node):
         
         stamp = Time.from_msg(odom_msg.header.stamp).nanoseconds
         
-        self.imu_logger.log_values([x,y,yaw, stamp])
+        self.odom_logger.log_values([x,y,yaw, stamp])
                 
     def laser_callback(self, laser_msg: LaserScan):
         #Set odom initialized check to true
@@ -119,7 +120,7 @@ class motion_executioner(Node):
         angle_increment = laser_msg.angle_increment                
         stamp = Time.from_msg(laser_msg.header.stamp).nanoseconds
                 
-        self.imu_logger.log_values([ranges,angle_increment,stamp])
+        self.odom_logger.log_values([ranges,angle_increment,stamp])
                 
     def timer_callback(self):
         
@@ -127,6 +128,7 @@ class motion_executioner(Node):
             self.successful_init=True
             
         if not self.successful_init:
+            print(f"Waiting for sensors... Odom: {self.odom_initialized}, Laser: 	{self.laser_initialized}, IMU: {self.imu_initialized}")
             return
         
         cmd_vel_msg=Twist()
@@ -152,7 +154,6 @@ class motion_executioner(Node):
     def make_circular_twist(self):
         
         msg=Twist()
-        ... # fill up the twist msg for circular motion
         msg.linear.x = 0.2 # 0.1 m/s in x or forward direction
         msg.angular.z = 0.5 # 1 radian per second of rotation about z
         return msg
