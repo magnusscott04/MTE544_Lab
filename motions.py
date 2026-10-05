@@ -4,7 +4,7 @@ import rclpy
 from rclpy.node import Node
 
 from utilities import Logger, euler_from_quaternion
-from rclpy.qos import QoSProfile
+from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy, HistoryPolicy
 
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Imu
@@ -17,7 +17,6 @@ from rclpy.time import Time
 # import ...
 
 qos_size = 10
-spiral_t = 0
 
 CIRCLE=0; SPIRAL=1; ACC_LINE=2
 motion_types=['circle', 'spiral', 'line']
@@ -31,6 +30,7 @@ class motion_executioner(Node):
         self.type=motion_type
         
         self.radius_=0.0
+        self.spiral_t = 0
         
         self.successful_init=False
         self.imu_initialized=False
@@ -46,7 +46,7 @@ class motion_executioner(Node):
         self.laser_logger=Logger('laser_content_'+str(motion_types[motion_type])+'.csv', headers=["ranges", "angle_increment", "stamp"])
         
         # TODO Part 3: Create the QoS profile by setting the proper parameters in (...)
-        qos=QoSProfile(depth = qos_size)
+        qos=QoSProfile(depth = qos_size, reliability = ReliabilityPolicy.RELIABLE, durability = DurabilityPolicy.VOLATILE, history = HistoryPolicy.KEEP_LAST)
 
         # TODO Part 5: Create below the subscription to the topics corresponding to the respective sensors
         # IMU subscription
@@ -120,7 +120,7 @@ class motion_executioner(Node):
         angle_increment = laser_msg.angle_increment                
         stamp = Time.from_msg(laser_msg.header.stamp).nanoseconds
                 
-        self.odom_logger.log_values([ranges,angle_increment,stamp])
+        self.laser_logger.log_values([angle_increment,stamp, *ranges])
                 
     def timer_callback(self):
         
@@ -171,7 +171,7 @@ class motion_executioner(Node):
     def make_acc_line_twist(self):
         msg=Twist()
         msg.linear.x = 0.5 # Set linear velocity to 0.5 meters per second
-        msg.angular.z = 0 #Set angular velocity to 0
+        msg.angular.z = 0.0 #Set angular velocity to 0
         return msg
 
 import argparse

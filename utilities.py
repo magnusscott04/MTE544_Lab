@@ -82,10 +82,7 @@ def euler_from_quaternion(quat):
     quat = [x, y, z, w]
 
     """
-    if hasattr(quat, 'x'):
-        x, y, z, w = quat.x, quat.y, quat.z, quat.w
-    else:
-        x, y, z, w = quat[0], quat[1], quat[2], quat[3]
+    x, y, z, w = quat.x, quat.y, quat.z, quat.w
 
     # Yaw calculation (Rot about z)
     yaw = atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z))
