@@ -31,6 +31,7 @@ class motion_executioner(Node):
         
         self.radius_=0.0
         self.spiral_t = 0
+        self.acc_t = 0
         
         self.successful_init=False
         self.imu_initialized=False
@@ -43,10 +44,11 @@ class motion_executioner(Node):
         # loggers
         self.imu_logger=Logger('imu_content_'+str(motion_types[motion_type])+'.csv', headers=["acc_x", "acc_y", "angular_z", "stamp"])
         self.odom_logger=Logger('odom_content_'+str(motion_types[motion_type])+'.csv', headers=["x","y","th", "stamp"])
-        self.laser_logger=Logger('laser_content_'+str(motion_types[motion_type])+'.csv', headers=["ranges", "angle_increment", "stamp"])
+        self.laser_logger=Logger('laser_content_'+str(motion_types[motion_type])+'.csv', headers=["angle_increment", "stamp", "ranges"])
         
         # TODO Part 3: Create the QoS profile by setting the proper parameters in (...)
-        qos=QoSProfile(depth = qos_size, reliability = ReliabilityPolicy.RELIABLE, durability = DurabilityPolicy.VOLATILE, history = HistoryPolicy.KEEP_LAST)
+        qosR=QoSProfile(depth = qos_size, reliability = ReliabilityPolicy.RELIABLE, durability = DurabilityPolicy.VOLATILE, history = HistoryPolicy.KEEP_LAST)
+        qosBE=QoSProfile(depth = qos_size, reliability = ReliabilityPolicy.BEST_EFFORT, durability = DurabilityPolicy.VOLATILE, history = HistoryPolicy.KEEP_LAST)
 
         # TODO Part 5: Create below the subscription to the topics corresponding to the respective sensors
         # IMU subscription
@@ -54,7 +56,7 @@ class motion_executioner(Node):
             Imu,
             '/imu',
             self.imu_callback,
-            qos
+            qosBE
         )
     
         # ENCODER subscription
@@ -62,7 +64,7 @@ class motion_executioner(Node):
             Odometry,
             '/odom',
             self.odom_callback,
-            qos
+            qosBE
         )
         
         
@@ -71,7 +73,7 @@ class motion_executioner(Node):
             LaserScan,
             '/scan',
             self.laser_callback,
-            qos
+            qosBE
         )
         
         
@@ -115,6 +117,7 @@ class motion_executioner(Node):
     def laser_callback(self, laser_msg: LaserScan):
         #Set odom initialized check to true
         self.laser_initialized = True
+
                 
         ranges = list(laser_msg.ranges)
         angle_increment = laser_msg.angle_increment                
@@ -155,7 +158,7 @@ class motion_executioner(Node):
         
         msg=Twist()
         msg.linear.x = 0.2 # 0.1 m/s in x or forward direction
-        msg.angular.z = 0.5 # 1 radian per second of rotation about z
+        msg.angular.z = 0.4 # 1 radian per second of rotation about z
         return msg
 
     def make_spiral_twist(self):
@@ -165,12 +168,13 @@ class motion_executioner(Node):
         #Increment radius 
         self.spiral_t +=1
         msg.angular.z = w
-        msg.linear.x = min(0.01*self.spiral_t,0.3)
+        msg.linear.x = min(0.001*self.spiral_t,0.3)
         return msg
     
     def make_acc_line_twist(self):
         msg=Twist()
-        msg.linear.x = 0.5 # Set linear velocity to 0.5 meters per second
+        self.acc_t += 0.01
+        msg.linear.x = min(self.acc_t,0.3) # Set linear velocity to 0.5 meters per second
         msg.angular.z = 0.0 #Set angular velocity to 0
         return msg
 
