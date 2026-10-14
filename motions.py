@@ -1,11 +1,12 @@
 # Imports
 import rclpy
-
 from rclpy.node import Node
-
 from utilities import Logger, euler_from_quaternion
+
+# Import QOS Keywords
 from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy, HistoryPolicy
 
+# Import MSG Libraries
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Imu
 from sensor_msgs.msg import LaserScan
@@ -13,9 +14,7 @@ from nav_msgs.msg import Odometry
 
 from rclpy.time import Time
 
-# You may add any other imports you may need/want to use below
-# import ...
-
+# Set QOS Size to 10 (Standard from ROS Docs)
 qos_size = 10
 
 CIRCLE=0; SPIRAL=1; ACC_LINE=2
@@ -38,7 +37,7 @@ class motion_executioner(Node):
         self.odom_initialized=False
         self.laser_initialized=False
         
-        # TODO Part 3: Create a publisher to send velocity commands by setting the proper parameters in (...)
+        # Create publisher with 
         self.vel_publisher=self.create_publisher(Twist, '/cmd_vel', qos_size)
                 
         # loggers
