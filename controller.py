@@ -1,6 +1,5 @@
 import numpy as np
 
-
 from pid import PID_ctrl
 from utilities import euler_from_quaternion, calculate_angular_error, calculate_linear_error
 
@@ -15,23 +14,26 @@ class controller:
     def __init__(self, klp=0.2, klv=0.2, kli=0.2, kap=0.2, kav=0.2, kai=0.2):
         
         # TODO Part 5 and 6: Modify the below lines to test your PD, PI, and PID controller
-        self.PID_linear=PID_ctrl(P, klp, klv, kli, filename_="linear.csv")
-        self.PID_angular=PID_ctrl(P, kap, kav, kai, filename_="angular.csv")
-
+        self.PID_linear=PID_ctrl(PID, klp, klv, kli, filename_="linear.csv")
+        self.PID_angular=PID_ctrl(PID, kap, kav, kai, filename_="angular.csv")
+        self.PD_linear=PID_ctrl(PD, klp, klv, kli, filename_="linear.csv")
+        self.PD_angular=PID_ctrl(PD, kap, kav, kai, filename_="angular.csv")
+        self.PI_linear=PID_ctrl(PI, klp, klv, kli, filename_="linear.csv")
+        self.PI_angular=PID_ctrl(PI, kap, kav, kai, filename_="angular.csv")
     
     def vel_request(self, pose, goal, status):
         
         e_lin=calculate_linear_error(pose, goal)
         e_ang=calculate_angular_error(pose, goal)
 
-
         linear_vel=self.PID_linear.update([e_lin, pose[3]], status)
         angular_vel=self.PID_angular.update([e_ang, pose[3]], status)
         
         # TODO Part 4: Add saturation limits for the robot linear and angular velocity
-
-        linear_vel = ... if linear_vel > 1.0 else linear_vel
-        angular_vel= ... if angular_vel > 1.0 else angular_vel
+        linear_vel = 0.31 if linear_vel > 0.31 else linear_vel # From hardware spec, max linear velocity is 0.31 m/s in safe mode
+        angular_vel= 1.90 if angular_vel > 1.90 else angular_vel # From hardware spec, max angular velocity is 1.9 m/s in safe mode
+        linear_vel = -0.31 if linear_vel < -0.31 else linear_vel # From hardware spec, max linear velocity is 0.31 m/s in safe mode
+        angular_vel= -1.90 if angular_vel < -1.90 else angular_vel # From hardware spec, max angular velocity is 1.9 m/s in safe mode
         
         return linear_vel, angular_vel
     
@@ -50,15 +52,15 @@ class trajectoryController(controller):
         
         e_lin=calculate_linear_error(pose, finalGoal)
         e_ang=calculate_angular_error(pose, goal)
-
         
         linear_vel=self.PID_linear.update([e_lin, pose[3]], status)
         angular_vel=self.PID_angular.update([e_ang, pose[3]], status) 
 
         # TODO Part 5: Add saturation limits for the robot linear and angular velocity
-
-        linear_vel = ... if linear_vel > ... else linear_vel
-        angular_vel= ... if angular_vel > ... else angular_vel
+        linear_vel = 0.31 if linear_vel > 0.31 else linear_vel # From hardware spec, max linear velocity is 0.31 m/s in safe mode
+        angular_vel= 1.90 if angular_vel > 1.90 else angular_vel # From hardware spec, max angular velocity is 1.9 m/s in safe mode
+        linear_vel = -0.31 if linear_vel < -0.31 else linear_vel # From hardware spec, max linear velocity is 0.31 m/s in safe mode
+        angular_vel= -1.90 if angular_vel < -1.90 else angular_vel # From hardware spec, max angular velocity is 1.9 m/s in safe mode
         
         return linear_vel, angular_vel
 
