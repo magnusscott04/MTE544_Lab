@@ -102,10 +102,12 @@ def calculate_angular_error(current_pose, goal_pose):
     """
     Calculate the error of the angular orientation of the robot   
     """  
+    # Calculate the desired orientation error to target
     dx = goal_pose[0] - current_pose[0]
     dy = goal_pose[1] - current_pose[1]
     error_angular = atan2(dy, dx)-current_pose[2]
 
+    # Fix -pi<error_angular<pi overruns
     while error_angular > M_PI:
         error_angular -= 2*M_PI
     while error_angular < -M_PI:
