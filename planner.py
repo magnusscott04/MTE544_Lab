@@ -1,6 +1,10 @@
+from math import exp
+
 # Type of planner
 POINT_PLANNER=0; TRAJECTORY_PLANNER=1
-
+# Type of trajectory
+PARABOLA = 0; SIGMOID = 1
+TRAJECTORY_SHAPE = PARABOLA
 
 
 class planner:
@@ -24,8 +28,22 @@ class planner:
         return x, y
 
     # TODO Part 6: Implement the trajectories here
-    def trajectory_planner(self):
-        pass
+    def trajectory_planner(self, n=50):
+        points = []
+
+        if TRAJECTORY_SHAPE == PARABOLA:
+            # Bounds x=[0, 1.5]
+            for i in range(n+1):
+                x = 1.5*i/n
+                y = x**2
+                points.append([x, y])
+        if TRAJECTORY_SHAPE == SIGMOID:
+            # Bounds x=[0, 2.5]
+            for i in range(n+1):
+                x = 2.5*i/n
+                y = 2 / (1 + exp(-2 * x)) - 1
+                points.append([x, y])      
+
         # the return should be a list of trajectory points: [ [x1,y1], ..., [xn,yn]]
-        # return 
+        return points
 
