@@ -104,7 +104,7 @@ def calculate_angular_error(current_pose, goal_pose):
     """  
     dx = goal_pose[0] - current_pose[0]
     dy = goal_pose[1] - current_pose[1]
-    error_angular = atan2(dx, dy)-current_pose[2]
+    error_angular = atan2(dy, dx)-current_pose[2]
 
     while error_angular > M_PI:
         error_angular -= 2*M_PI
