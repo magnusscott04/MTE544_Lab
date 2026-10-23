@@ -29,8 +29,7 @@ class decision_maker(Node):
         super().__init__("decision_maker")
 
         #TODO Part 4: Create a publisher for the topic responsible for robot's motion
-        self.publisher=... 
-
+        self.publisher=self.create_publisher(publisher_msg, publishing_topic, qos_publisher)
         publishing_period=1/rate
         
         # Instantiate the controller
@@ -61,8 +60,8 @@ class decision_maker(Node):
 
     def timerCallback(self):
         
-        # TODO Part 3: Run the localization node
-        ...    # Remember that this file is already running the decision_maker node.
+        # TODO Part 3: Run the localization node LW
+        spin_once(self.localizer)
 
         if self.localizer.getPose()  is  None:
             print("waiting for odom msgs ....")
@@ -70,12 +69,18 @@ class decision_maker(Node):
 
         vel_msg=Twist()
         
-        # TODO Part 3: Check if you reached the goal
+        # TODO Part 3: Check if you reached the goal LW
+        pose = self.localizer.getPose()
+    
         if type(self.goal) == list:
-            reached_goal=...
+            linearOK = calculate_linear_error(pose, self.goal[-1])<0.1
+            angularOK = abs(calculate_angular_error(pose, self.goal[-1]))<0.2
+            reached_goal=linearOK and angularOK
         else: 
-            reached_goal=...
-        
+            linearOK = calculate_linear_error(pose, self.goal)<0.1
+            angularOK = abs(calculate_angular_error(pose, self.goal))<0.2
+            reached_goal=linearOK and angularOK
+
 
         if reached_goal:
             print("reached goal")
@@ -84,13 +89,14 @@ class decision_maker(Node):
             self.controller.PID_angular.logger.save_log()
             self.controller.PID_linear.logger.save_log()
             
-            #TODO Part 3: exit the spin
-            ... 
+            #TODO Part 3: exit the spin LW
+            raise SystemExit
         
         velocity, yaw_rate = self.controller.vel_request(self.localizer.getPose(), self.goal, True)
-
-        #TODO Part 4: Publish the velocity to move the robot
-        ... 
+        vel_msg.linear.x = velocity
+        vel_msg.angular.z = yaw_rate
+        self.publisher.publish(vel_msg)
+        
 
 import argparse
 
@@ -99,7 +105,7 @@ def main(args=None):
     
     init()
 
-    # TODO Part 3: You migh need to change the QoS profile based on whether you're using the real robot or in simulation.
+    # TODO Part 3: You might need to change the QoS profile based on whether you're using the real robot or in simulation.
     # Remember to define your QoS profile based on the information available in "ros2 topic info /odom --verbose" as explained in Tutorial 3
     
     odom_qos=QoSProfile(reliability=2, durability=2, history=1, depth=10)
@@ -107,12 +113,12 @@ def main(args=None):
 
     # TODO Part 4: instantiate the decision_maker with the proper parameters for moving the robot
     if args.motion.lower() == "point":
-        DM=decision_maker(...)
+        DM=decision_maker(Twist, "/cmd_vel", 10, [1.0,1.0], motion_type=POINT_PLANNER)
     elif args.motion.lower() == "trajectory":
-        DM=decision_maker(...)
+        DM=decision_maker(Twist, "/cmd_vel", 10, [1.0,1.0], motion_type=TRAJECTORY_PLANNER)
     else:
         print("invalid motion type", file=sys.stderr)        
-    
+        return
     
     
     try:
