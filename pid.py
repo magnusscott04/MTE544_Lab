@@ -67,8 +67,8 @@ class PID_ctrl:
             
             
             # TODO Part 5: calculate the error dot 
-            err_difference = self.history[i][0] - self.history[i-1][0]
-            error_dot += err_difference/dt
+            err_difference = self.history[i][0] - self.history[i-1][0] # Calculate error difference
+            error_dot += err_difference/dt # Calculate numerical derivative (rate of change of error)
             
             
         error_dot/=len(self.history)
@@ -88,17 +88,17 @@ class PID_ctrl:
         
         # TODO Part 4: Implement the control law of P-controller
         if self.type == P:
-            return self.kp*latest_error
+            return self.kp*latest_error #Proportional gain multiplied by current error value
         
         # TODO Part 5: Implement the control law corresponding to each type of controller
         elif self.type == PD:
             pass
-            return self.kp*latest_error + self.kv*error_dot
+            return self.kp*latest_error + self.kv*error_dot # Proportional*Error + kd*ROC of error
         
         elif self.type == PI:
             pass
-            return self.ki*error_int + self.kp*latest_error
+            return self.ki*error_int + self.kp*latest_error # Proportional*Error + ki*sum of error
         
         elif self.type == PID:
             pass
-            return self.ki*error_int+self.kp*latest_error+error_dot*self.kv
+            return self.ki*error_int+self.kp*latest_error+error_dot*self.kv # Proportional*Error + ki*sum of error +kd*ROC
