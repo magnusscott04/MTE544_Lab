@@ -20,6 +20,8 @@ class localization(Node):
         
         # TODO Part 3: Define the QoS profile variable based on whether you are using the simulation (Turtlebot 3 Burger) or the real robot (Turtlebot 4)
         # Remember to define your QoS profile based on the information available in "ros2 topic info /odom --verbose" as explained in Tutorial 3
+        
+        #Match publisher QoS profile - QoS depth of 10, Best effort reliability, volatile durability and keep last.
         odom_qos=QoSProfile(depth = qos_size, reliability = ReliabilityPolicy.BEST_EFFORT, durability = DurabilityPolicy.VOLATILE, history = HistoryPolicy.KEEP_LAST)
         
         self.loc_logger=Logger("robot_pose.csv", ["x", "y", "theta", "stamp"])
@@ -50,15 +52,21 @@ class localization(Node):
 # Here put a guard that makes the node run, ONLY when run as a main thread!
 # This is to make sure this node functions right before using it in decision.py
 
+#Check if script is being run in main
 if __name__ == '__main__':
+    #Setup ROS2 environment
     init()
     
+    #Instantiate localization node
     LOC = localization()
     
     try:
+        #Run ROS node
         spin(LOC)
     except KeyboardInterrupt:
+        #Allow interupt with ctrl C
         print("Exiting")
     finally:
+        #Destroy node to prevent zombie processes
         LOC.destroy_node()
         shutdown()
