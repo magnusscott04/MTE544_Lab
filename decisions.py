@@ -33,7 +33,7 @@ class decision_maker(Node):
 
 
         # TODO Part 3: use the Kalman Filter
-        self.localizer=localization(...)
+        self.localizer=localization(kalmanFilter, publishing_period)
         
         
         if motion_type==POINT_PLANNER:
