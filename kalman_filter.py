@@ -1,5 +1,3 @@
-
-
 import numpy as np
 
 
@@ -10,40 +8,42 @@ class kalman_filter:
     # TODO Part 3: Initialize the covariances and the states    
     def __init__(self, P,Q,R, x, dt):
         
-        self.P=...
-        self.Q=...
-        self.R=...
-        self.x=...
-        self.dt = ...
+        self.P=P # State Covariance Matrix
+        self.Q=Q # Process Noise/Uncertainty
+        self.R=R # Sensor Noise/Uncertainty
+        self.x=x # State Vector
+        self.dt=dt # Time Step
         
     # TODO Part 3: Replace the matrices with Jacobians where needed        
     def predict(self):
 
-        self.A = ...
-        self.C = ...
+        self.A = self.jacobian_A() #Update motion jacobian in A
         
-        self.motion_model()
+        self.x = self.motion_model() # Prediction of state vector based on motion model
         
-        self.P= np.dot( np.dot(self.A, self.P), self.A.T) + self.Q
+        self.P= np.dot( np.dot(self.A, self.P), self.A.T) + self.Q # Update Covariance matrix based on jacobian of A 
 
     # TODO Part 3: Calculate the Kalman gain and correct your estimates
     def update(self, z):
         
-        kalman_gain= ...
+        self.C = self.jacobian_H() #Update measurement jacobian in C
+                
+        self.S = np.dot(np.dot(self.C,self.P),self.C.T) + self.R
+        kalman_gain= np.dot(np.dot(self.P,self.C.T),np.linalg.inv(self.S))
         
-        self.x= ...
+        self.x= self.x + np.dot(kalman_gain,(z-self.measurement_model()))
         
-        self.P= ...
+        self.P= np.dot((1- np.dot(kalman_gain, self.C)),self.P)
         
     
     # TODO Part 3: Implement here the measurement model
     def measurement_model(self):
         x, y, th, w, v, vdot = self.x
         return np.array([
-            ...,# v
-            ...,# w
-            ..., # ax
-            ..., # ay
+            v,# Linear Velocity
+            w,# Angular Velocity
+            vdot, # ax - Linear acceleration in driving direction
+            v*w, # ay - 
         ])
         
     # TODO Part 3: Impelment the motion model (state-transition matrice)

@@ -35,6 +35,7 @@ class decision_maker(Node):
         # TODO Part 3: use the Kalman Filter
         self.localizer=localization(...)
         
+        
         if motion_type==POINT_PLANNER:
             self.controller=controller(klp=0.2, klv=0.5, kap=0.8, kav=0.6)      
             self.planner=planner(POINT_PLANNER)
