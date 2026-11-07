@@ -33,7 +33,8 @@ class kalman_filter:
         
         self.x= self.x + np.dot(kalman_gain,(z-self.measurement_model())) #6x1
         
-        self.P= np.dot((1- np.dot(kalman_gain, self.C)),self.P) #6x6
+        I = np.eye(6)
+        self.P= np.dot((I - np.dot(kalman_gain, self.C)),self.P) #6x6
         
     
     # TODO Part 3: Implement here the measurement model
