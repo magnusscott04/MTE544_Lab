@@ -86,18 +86,18 @@ class localization(Node):
         stamp = odom_msg.header.stamp
         # Update the pose estimate to be returned by getPose
         # odom pose [x,y,theta,stamp]
-        self.pose=np.array(xhat[0], xhat[1], xhat[2],stamp)
+        self.pose=[xhat[0], xhat[1], xhat[2],stamp]
 
         # TODO Part 4: log your data
         self.loc_logger.log_values([
             imu_msg.linear_acceleration.x,   # Sensor acceleration in x
             imu_msg.linear_acceleration.y,   # Sensor acceleration in y
-            self.xhat[5],                    # KF acceleration in x
-            self.xhat[4]*self.xhat[3],       # KF acceleration in y
-            self.xhat[4],                    # KF linear velocity
-            self.xhat[3],                    # KF angular velocity
-            self.xhat[0],                    # KF x position
-            self.xhat[1],                    # KF y position
+            xhat[5],                         # KF acceleration in x
+            xhat[4]*xhat[3],                 # KF acceleration in y
+            xhat[4],                         # KF linear velocity
+            xhat[3],                         # KF angular velocity
+            xhat[0],                         # KF x position
+            xhat[1],                         # KF y position
             Time.from_msg(stamp).nanoseconds # Time stamp
         ])
       
