@@ -82,7 +82,7 @@ class localization(Node):
         
         # Get the estimate [x,y,theta,x,v,v_dot]
         xhat=self.kf.get_states()
-
+        # Get time stamp
         stamp = odom_msg.header.stamp
         # Update the pose estimate to be returned by getPose
         # odom pose [x,y,theta,stamp]
