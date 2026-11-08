@@ -32,8 +32,8 @@ class decision_maker(Node):
         self.reachThreshold=0.01
 
 
-        # TODO Part 3: use the Kalman Filter
-        self.localizer=localization(kalmanFilter, publishing_period)
+        # Part 3: use the Kalman Filter
+        self.localizer=localization(kalmanFilter, publishing_period) # Called localization with publishing period as time step
         
         
         if motion_type==POINT_PLANNER:
