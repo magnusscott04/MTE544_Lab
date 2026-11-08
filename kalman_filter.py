@@ -2,10 +2,10 @@ import numpy as np
 
 
 
-# TODO Part 3: Comment the code explaining each part
+# Part 3: Comment the code explaining each part
 class kalman_filter:
     
-    # TODO Part 3: Initialize the covariances and the states    
+    # Part 3: Initialize the covariances and the states    
     def __init__(self, P,Q,R, x, dt):
         
         self.P=P # State Covariance Matrix
@@ -14,30 +14,29 @@ class kalman_filter:
         self.x=x # State Vector
         self.dt=dt # Time Step
         
-    # TODO Part 3: Replace the matrices with Jacobians where needed        
+    # Part 3: Replace the matrices with Jacobians where needed        
     def predict(self):
 
         self.A = self.jacobian_A() #6x6 Update motion jacobian in A
+        self.motion_model() #6x1 update state vector with prediction based on motion model
         
-        self.motion_model() #6x1 Prediction of state vector based on motion model
-        
-        self.P= np.dot( np.dot(self.A, self.P), self.A.T) + self.Q #6x6 Update Covariance matrix based on jacobian of A 
+        self.P= np.dot( np.dot(self.A, self.P), self.A.T) + self.Q #P-6x6 Update Covariance matrix based on jacobian of A 
 
-    # TODO Part 3: Calculate the Kalman gain and correct your estimates
+    # Part 3: Calculate the Kalman gain and correct your estimates
     def update(self, z):
         
-        self.C = self.jacobian_H() #C(4x6) - Update measurement jacobian in C
+        self.C = self.jacobian_H() #C-(4x6) - Update measurement jacobian and store in C
                 
-        self.S = np.dot(np.dot(self.C,self.P),self.C.T) + self.R #S-4x4 R-4x4
-        kalman_gain= np.dot(np.dot(self.P,self.C.T),np.linalg.inv(self.S)) #6x4
+        self.S = np.dot(np.dot(self.C,self.P),self.C.T) + self.R #S-4x4 R-4x4 Intermediate solving step for kalman gain
+        kalman_gain= np.dot(np.dot(self.P,self.C.T),np.linalg.inv(self.S)) #k-(6x4) Solve for kalman gain
         
-        self.x= self.x + np.dot(kalman_gain,(z-self.measurement_model())) #6x1
+        self.x= self.x + np.dot(kalman_gain,(z-self.measurement_model())) #x-(6x1) Update state vector with measurement correction
         
-        I = np.eye(6)
-        self.P= np.dot((I - np.dot(kalman_gain, self.C)),self.P) #6x6
+        I = np.eye(6) #Identity matrix (6x6)
+        self.P= np.dot((I - np.dot(kalman_gain, self.C)),self.P) #P-6x6 Update covariance matrix
         
     
-    # TODO Part 3: Implement here the measurement model
+    # Part 3: Implement here the measurement model
     def measurement_model(self):
         x, y, th, w, v, vdot = self.x
         return np.array([
@@ -47,7 +46,7 @@ class kalman_filter:
             v*w, # ay - Linear acceleration perpendicular to driving direction
         ])
         
-    # TODO Part 3: Impelment the motion model (state-transition matrice)
+    # Part 3: Impelment the motion model (state-transition matrice)
     def motion_model(self):
         
         x, y, th, w, v, vdot = self.x
@@ -69,7 +68,9 @@ class kalman_filter:
         x, y, th, w, v, vdot = self.x
         dt = self.dt
         
-        # Transpose of format in notes
+        # The jacobian matrix is taken by finding the 
+        # partial derivative of each index
+        # It is the transpose of the format in notes
         
         return np.array([
             #x, y,               th, w,             v, vdot
@@ -82,9 +83,14 @@ class kalman_filter:
         ])
     
     
-    # TODO Part 3: Implement here the jacobian of the H matrix (measurements)    
+    # Part 3: Implement here the jacobian of the H matrix (measurements)    
     def jacobian_H(self):
         x, y, th, w, v, vdot=self.x
+        
+        # The jacobian matrix is taken by finding the 
+                # partial derivative of each index
+                # It is the transpose of the format in notes
+                
         return np.array([
             #x, y,th, w, v,vdot
             [0,0,0  , 0, 1, 0], # Partial derivatives of v
@@ -93,6 +99,6 @@ class kalman_filter:
             [0,0,0  , v, w, 0], # Partial derivatives of ay
         ])
         
-    # TODO Part 3: return the states here    
+    # Part 3: return the states here    
     def get_states(self):
-        return self.x
+        return self.x # Return the state vector
