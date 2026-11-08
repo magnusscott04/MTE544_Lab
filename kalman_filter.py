@@ -87,9 +87,8 @@ class kalman_filter:
     def jacobian_H(self):
         x, y, th, w, v, vdot=self.x
         
-        # The jacobian matrix is taken by finding the 
-                # partial derivative of each index
-                # It is the transpose of the format in notes
+        # The jacobian matrix is taken by finding the partial derivative of each index
+        # Transpose of the format in notes
                 
         return np.array([
             #x, y,th, w, v,vdot
