@@ -43,10 +43,10 @@ class decision_maker(Node):
         publishing_period=1/rate
 
         # TODO PART 5 choose your threshold
-        self.reachThreshold=...
+        self.reachThreshold=0.1 # Set threshold for proximity to goal point - 0.1 meters is reasonable starting point to account for acc noise
 
         # TODO PART 5 your localization type
-        self.localizer=localization(...)
+        self.localizer=localization(kalmanFilter) # Apply Kalman filtered localization method to prevent noise from skewing robot path.
 
 
         
@@ -57,7 +57,7 @@ class decision_maker(Node):
         
         elif motion_type==TRAJECTORY_PLANNER:
             # TODO PART 5 Put the gains that you concluded from lab 2
-            self.controller=trajectoryController(...)      
+            self.controller=trajectoryController(klp=0.4, klv=0.4, kap=0.3, kav=0.8,kai=0.2, kli =0.2) # Lab 2 gains are applied. 
             self.planner=planner(TRAJECTORY_PLANNER)
         
         else:
