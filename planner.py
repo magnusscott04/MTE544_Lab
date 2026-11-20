@@ -31,14 +31,15 @@ class planner:
         # TODO PART 5 Create the cost-map, the laser_sig is 
         # the standard deviation for the gausiian for which
         # the mean is located on the occupant grid. 
-        self.m_utilites=mapManipulator(laser_sig=...)
+         # Laser_sig set based on the robot radius of 0.34m, Because our 
+         # Robot is 0.34 meters, we set laser sig to 0.2 to allow sufficient propogation
+         # Of cost map to prevent robot from colliding with obstacles.
+        self.m_utilites=mapManipulator(laser_sig=0.2)
             
         self.costMap=self.m_utilites.make_likelihood_field()
         
 
     def trajectory_planner(self, startPoseCart, endPoseCart):
-
-
         # This is to convert the cartesian coordinates into the 
         # the pixel coordinates of the map image, remmember,
         # the cost-map is in pixels. You can by the way, convert the pixels
@@ -48,13 +49,11 @@ class planner:
         endPose=self.m_utilites.position_2_cell(endPoseCart)
         
         # TODO PART 5 convert the cell pixels into the cartesian coordinates
-        
-        Path = list(map(...))
-
-
+        path=search(self.costMap, startPose, endPose) # Find path using A* function (returned path is in pixels)
+        Path = list(map(self.m_utilites.cell_2_position, path)) # Convert path to cartesian.
 
         # TODO PART 5 return the path as list of [x,y]
-        return ...
+        return [[x, y] for x, y in Path] # Return the path element wise 
 
 
 
@@ -67,4 +66,3 @@ if __name__=="__main__":
 
     # you can use this part of the code to test your 
     # search algorithm regardless of the ros2 hassles
-    
