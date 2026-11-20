@@ -107,14 +107,14 @@ def search(maze, start, end):
     # TODO PART 4 what squares do we search . serarch movement is left-right-top-bottom
     # (4 or 8 movements) from every positon
     # Check row column convention in simulation
-    move = [[0,1],  # go up
+    move = [[0,-1],  # go up
             [-1,0],  # go left
-            [0,-1],  # go down
+            [0,1],  # go down
             [1,0],  # go right
-            [-1,1],  # go up left
-            [-1,-1],  # go down left
-            [1,1],  # go up right
-            [1,-1]]  # go down right
+            [-1,-1],  # go up left
+            [-1,1],  # go down left
+            [1,-1],  # go up right
+            [1,1]]  # go down right
 
     """
         1) We first get the current node by comparing all f cost and selecting the lowest cost node for further expansion
