@@ -53,7 +53,7 @@ class planner:
         Path = list(map(self.m_utilites.cell_2_position, path)) # Convert path to cartesian.
 
         # TODO PART 5 return the path as list of [x,y]
-        return [[x, y] for x, y in Path] # Return the path element wise 
+        return Path # Return the path
 
 
 
