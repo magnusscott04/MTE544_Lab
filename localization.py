@@ -75,7 +75,7 @@ class localization(Node):
             # that you conclude from lab Three
             Q=0.1*np.eye(6) # Lab 3 tuned Q was 0.1*np.eye(6)
             R=0.4*np.eye(4) # Lab 3 tuned R was 0.4*np.eye(4)
-            P=0.5*np.eye(6) # Lab 3 P was estimated as 0.5*np.eye(6) as we could not access process/motion cov in topics list.
+            P=0.1*np.eye(6) # Lab 3 P was estimated as 0.5*np.eye(6) as we could not access process/motion cov in topics list.
                         
             self.kf=kalman_filter(P,Q,R, x)
             
